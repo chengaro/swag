@@ -1,0 +1,865 @@
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "title" : "Единый кассовый бэкенд",
+    "description" : "Полезные ссылки: \n- [Описание ЕКБ на Букстеке](https://bookstack.int.vkusvill.ru/books/funkcionalnaya-arxitektura/page/edinyi-kassovyi-bekend-etap-1)\n- [ВкусВилл API](https://mobile.vkusvill.ru:40113/apidoc/)",
+    "version" : "1.0"
+  },
+  "servers" : [ {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/chengaro/Unified-POS-Backend/1.0"
+  }, {
+    "url" : "http://localhost:5000/api/v1"
+  } ],
+  "tags" : [ {
+    "name" : "authorization",
+    "description" : "Авторизация клиента по one-time-password в смс"
+  }, {
+    "name" : "proxy",
+    "description" : "Proxy-методы без собственной логики"
+  }, {
+    "name" : "product",
+    "description" : "Методы работы с товарами"
+  } ],
+  "paths" : {
+    "/otp" : {
+      "post" : {
+        "tags" : [ "authorization" ],
+        "summary" : "Получение one-time-password",
+        "description" : "Proxy-метод на [https://mobile.vkusvill.ru:40113/api/user/](https://mobile.vkusvill.ru:40113/api/user/) для получения одноразового кода в виде СМС на указанный номер телефона",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "x-vkusvill-device",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "ios"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProxyInputOtp"
+              }
+            },
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProxyInputOtp"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProxyOutputOtp"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProxyOutputOtpError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login" : {
+      "post" : {
+        "tags" : [ "authorization" ],
+        "summary" : "Получение токена авторизации",
+        "description" : "Proxy-метод на [https://mobile.vkusvill.ru:40113/api/user/checkSms/](https://mobile.vkusvill.ru:40113/api/user/checkSms/) для получения токена авторизации по одноразовому коду в виде СМС из предыдущего шага",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "x-vkusvill-device",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "ios"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProxyInputLogin"
+              }
+            },
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProxyInputLogin"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProxyOutputLogin"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProxyOutputLoginError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/order/calculation" : {
+      "post" : {
+        "tags" : [ "proxy" ],
+        "summary" : "Рассчитать заказ",
+        "description" : "Proxy-метод на [http://10.1.241.121:80/online-pay/spBascketCostGetV2](http://10.1.241.121:80/online-pay/spBascketCostGetV2)",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProxyInputOrderCalculation"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProxyOutputOrderCalculation"
+                }
+              }
+            }
+          },
+          "4XX" : {
+            "description" : "Bad request. Invalid input parameters",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProxyOutputOrderCalculationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/setup/LP" : {
+      "post" : {
+        "tags" : [ "proxy" ],
+        "summary" : "Установить любимый продукт",
+        "description" : "Proxy-метод на [https://mobile.vkusvill.ru:40113/api/stores/setLP/](https://mobile.vkusvill.ru:40113/api/stores/setLP/)",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "x-vkusvill-token",
+          "description" : "Токен пользователя",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "header",
+          "name" : "x-vkusvill-device",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "ios"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProxyInputSetupLP"
+              }
+            },
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProxyInputSetupLP"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProxyOutputSetupLP"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProxyOutputSetupLPError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "User not found"
+          }
+        }
+      }
+    },
+    "/discounts/shop" : {
+      "post" : {
+        "tags" : [ "proxy" ],
+        "summary" : "Получить скидки на магазине",
+        "description" : "Proxy-метод на [https://mobile.vkusvill.ru/api/discounts/shop](https://mobile.vkusvill.ru/api/discounts/shop)\n```\nTODO: Метод не описан в API, там есть только discounts и discounts/ui\nУзнать входные и выходные параметры проксируемого метода, потом изменить текущее описание\n```",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProxyInputShopDiscounts"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProxyOutputShopDiscounts"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request. Invalid input parameters"
+          },
+          "401" : {
+            "description" : "Authorization information is missing or invalid."
+          },
+          "404" : {
+            "description" : "Not found"
+          },
+          "5XX" : {
+            "description" : "Unexpected error."
+          }
+        }
+      }
+    },
+    "/discounts/ui" : {
+      "get" : {
+        "tags" : [ "proxy" ],
+        "summary" : "Получить ресурсы привилегий",
+        "description" : "Proxy-метод на [https://mobile.vkusvill.ru/api/discounts/ui](https://mobile.vkusvill.ru/api/discounts/ui)",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProxyOutputPrivilegeResources"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      }
+    },
+    "/getProducts" : {
+      "post" : {
+        "tags" : [ "product" ],
+        "summary" : "Метод получения списка товаров",
+        "description" : "Полный список товаров без фильтрации\n\nБизнес-логика (ХП или прямой select):\n```\nselect Id as product_id, Name as product_description, FullName as product_full_description\nfrom storage.dbo.Product\n```",
+        "requestBody" : {
+          "description" : "Входные параметры логгируются для хранения истории запросов по кассе и магазину",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Cashier"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Products"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request. Invalid input parameters"
+          },
+          "401" : {
+            "description" : "Authorization information is missing or invalid."
+          },
+          "404" : {
+            "description" : "Not found"
+          },
+          "5XX" : {
+            "description" : "Unexpected error."
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Cashier" : {
+        "type" : "object",
+        "properties" : {
+          "cash_id" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 4321
+          },
+          "shop_no" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1234
+          },
+          "last_update" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "Products" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/Product"
+        }
+      },
+      "Product" : {
+        "type" : "object",
+        "properties" : {
+          "product_id" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1137
+          },
+          "product_description" : {
+            "type" : "string",
+            "example" : "Куркума молотая"
+          },
+          "product_full_description" : {
+            "type" : "string",
+            "example" : "Куркума молотая"
+          }
+        }
+      },
+      "ProxyInputOtp" : {
+        "type" : "object",
+        "required" : [ "Phone_number" ],
+        "properties" : {
+          "Phone_number" : {
+            "type" : "string",
+            "description" : "10 цифр без лидирующих +7/8",
+            "example" : 9153713696
+          }
+        }
+      },
+      "ProxyOutputOtp" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1
+          }
+        }
+      },
+      "ProxyOutputOtpError" : {
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "example" : [ "Введите номер телефона", "Номер телефона должен состоять из 10 цифр", "Для продолжения работы, пожалуйста, обновите приложение и попробуйте еще раз", "Для отправки повторного СМС нужно подождать хх секунд" ]
+          }
+        }
+      },
+      "ProxyInputLogin" : {
+        "type" : "object",
+        "required" : [ "Phone_number", "sms" ],
+        "properties" : {
+          "Phone_number" : {
+            "type" : "string",
+            "description" : "10 цифр без лидирующих +7/8",
+            "example" : 9153713696
+          },
+          "sms" : {
+            "type" : "string",
+            "description" : "Код из СМС",
+            "example" : 148186
+          }
+        }
+      },
+      "ProxyOutputLogin" : {
+        "type" : "object",
+        "properties" : {
+          "Phone_Number" : {
+            "type" : "string",
+            "example" : 9153713696
+          },
+          "number" : {
+            "type" : "string",
+            "description" : "Номер бонусной карты клиента",
+            "example" : "N105573"
+          },
+          "Name" : {
+            "type" : "string",
+            "example" : "Юрий"
+          },
+          "I_am_In_Story" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 0
+          },
+          "email" : {
+            "type" : "string",
+            "example" : ""
+          },
+          "token" : {
+            "type" : "string",
+            "description" : "токен авторизации",
+            "example" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJjYXJkIjoiTjEwNTU3MiIsInZlcnNpb24iOjJ9.7F7l5rtdNFd_PWdWRRpPgZjTVd7Sm-OfkHxayWr1NI5VfyYV4JvjImNXvZF5X1pkHbhHcWBIM2OcOzIAJGYT71MQuaURYjUmstzhzFYA_9FegfmfyIt7RL-s-VJRzikDGVdIRibf7N8YhIeSBPVb4YP8UnJe4OQYHewnTAjCG6w"
+          },
+          "from_express" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1
+          }
+        }
+      },
+      "ProxyOutputLoginError" : {
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "example" : [ "Слишком много неудачных попыток ввода кода для активации. Запросите новую СМС", "Введите номер телефона", "Номер телефона должен состоять из 10 цифр", "Введите код из СМС сообщения", "Карта зарегистрированная на номер телефона ххх, не найдена", "Введен неверный код", "Срок действия SMS истек" ]
+          }
+        }
+      },
+      "ProxyInputOrderCalculation" : {
+        "type" : "object",
+        "properties" : {
+          "Id_Order" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : null
+          },
+          "Number" : {
+            "type" : "string",
+            "example" : "D672050"
+          },
+          "Inn" : {
+            "type" : "integer",
+            "format" : "int64",
+            "example" : null
+          },
+          "Service" : {
+            "type" : "string",
+            "example" : 1
+          },
+          "isOnline" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1
+          },
+          "Show_Lines_With_Error" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1
+          },
+          "Shops" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "ShopNo" : {
+                  "type" : "string",
+                  "example" : 999
+                }
+              }
+            }
+          },
+          "Lines" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "Id_Tov" : {
+                  "type" : "integer",
+                  "format" : "int32",
+                  "example" : 15259
+                },
+                "Quantity" : {
+                  "type" : "number",
+                  "format" : "float",
+                  "example" : 10
+                },
+                "GreenPrice" : {
+                  "type" : "integer",
+                  "format" : "int32",
+                  "example" : 0
+                },
+                "Price" : {
+                  "type" : "number",
+                  "format" : "double",
+                  "example" : 0
+                },
+                "Id_Partner" : {
+                  "type" : "integer",
+                  "format" : "int32",
+                  "example" : 11
+                },
+                "Price_type" : {
+                  "type" : "integer",
+                  "format" : "int32",
+                  "example" : null
+                },
+                "Dsc_Value" : {
+                  "type" : "number",
+                  "format" : "double",
+                  "example" : null
+                },
+                "Discount_Ch" : {
+                  "type" : "number",
+                  "format" : "double",
+                  "example" : null
+                },
+                "BarCode" : {
+                  "type" : "string",
+                  "format" : "byte",
+                  "example" : 12321321
+                },
+                "Id_Line" : {
+                  "type" : "integer",
+                  "format" : "int32",
+                  "example" : null
+                },
+                "MarkingDataMatrix" : {
+                  "type" : "string",
+                  "format" : "byte",
+                  "example" : 4231
+                }
+              }
+            }
+          }
+        }
+      },
+      "ProxyOutputOrderCalculation" : {
+        "type" : "object",
+        "properties" : {
+          "@ResultCode" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 0
+          },
+          "@ResultMessage" : {
+            "type" : "string",
+            "example" : ""
+          },
+          "Lines" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "Id_Tov" : {
+                  "type" : "string",
+                  "example" : 15259
+                },
+                "BarCode" : {
+                  "type" : "string",
+                  "format" : "byte",
+                  "example" : 12321321
+                },
+                "GreenPrice" : {
+                  "type" : "string",
+                  "example" : 0
+                },
+                "Quantity" : {
+                  "type" : "string",
+                  "example" : 10
+                },
+                "Price" : {
+                  "type" : "string",
+                  "example" : "345.00"
+                },
+                "Calculated_Price" : {
+                  "type" : "string",
+                  "example" : "345.00"
+                },
+                "Customer_Price" : {
+                  "type" : "string",
+                  "example" : "345.00"
+                },
+                "Discount_Ch" : {
+                  "type" : "string",
+                  "example" : "0.000"
+                },
+                "Price_type" : {
+                  "type" : "string",
+                  "example" : 1
+                },
+                "Id_Partner" : {
+                  "type" : "string",
+                  "example" : 11
+                },
+                "MarkingDataMatrix" : {
+                  "type" : "string",
+                  "format" : "byte",
+                  "example" : 4231
+                },
+                "Result_Code" : {
+                  "type" : "string",
+                  "example" : 0
+                },
+                "Dsc_Value" : {
+                  "type" : "string",
+                  "example" : "0.00"
+                },
+                "ext1" : {
+                  "type" : "string",
+                  "example" : null
+                },
+                "ext2" : {
+                  "type" : "string",
+                  "example" : null
+                },
+                "ext3" : {
+                  "type" : "string",
+                  "example" : null
+                },
+                "Id_Line" : {
+                  "type" : "string",
+                  "example" : 0
+                },
+                "priv_used" : {
+                  "type" : "integer",
+                  "format" : "int32",
+                  "example" : 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "ProxyOutputOrderCalculationError" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 3
+          },
+          "message" : {
+            "type" : "string",
+            "example" : "unable to convert Service field to int with value"
+          },
+          "details" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "@type" : {
+                  "type" : "string",
+                  "example" : ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "ProxyInputSetupLP" : {
+        "type" : "object",
+        "required" : [ "bonusCard", "id_tov_lp" ],
+        "properties" : {
+          "bonusCard" : {
+            "type" : "string",
+            "description" : "Номер бонусной карты пользователя",
+            "example" : "n105572"
+          },
+          "id_tov_lp" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Id товара",
+            "example" : 5678
+          }
+        }
+      },
+      "ProxyOutputSetupLP" : {
+        "type" : "object",
+        "properties" : {
+          "message" : {
+            "type" : "string",
+            "description" : "Сообщение сервера",
+            "example" : "Этот товар нельзя установить в качестве Любимого продукта"
+          },
+          "res" : {
+            "type" : "number",
+            "description" : "0 - все хорошо, иначе - ошибка",
+            "example" : 0
+          }
+        }
+      },
+      "ProxyOutputSetupLPError" : {
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "example" : [ "Введите номер бонусной карты", "Не указан ID товара" ]
+          }
+        }
+      },
+      "ProxyInputShopDiscounts" : {
+        "type" : "object",
+        "properties" : {
+          "shop_id" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 12345
+          }
+        }
+      },
+      "ProxyOutputShopDiscounts" : {
+        "type" : "array",
+        "items" : {
+          "type" : "object",
+          "properties" : {
+            "product_id" : {
+              "type" : "integer",
+              "format" : "int32",
+              "example" : 1137
+            },
+            "discount" : {
+              "description" : "в процентах",
+              "type" : "integer",
+              "example" : 15
+            }
+          }
+        }
+      },
+      "ProxyOutputPrivilegeResources" : {
+        "type" : "array",
+        "items" : {
+          "type" : "object",
+          "properties" : {
+            "Author" : {
+              "type" : "string",
+              "example" : "База Татьяна Юрьевна"
+            },
+            "DateCreation" : {
+              "type" : "string",
+              "format" : "date-time"
+            },
+            "TypeOfGoods" : {
+              "type" : "string",
+              "example" : "Штучный"
+            },
+            "icon" : {
+              "type" : "object",
+              "properties" : {
+                "icon_basic" : {
+                  "type" : "string",
+                  "example" : "https:\\/\\/cdn-mobile-backend.vkusvill.ru\\/appn\\/23CPDYM8jXUBsmTxX73AJHmrKhHAvtuFERqCKBnG.png"
+                },
+                "icon_pers" : {
+                  "type" : "string",
+                  "example" : "https:\\/\\/cdn-mobile-backend.vkusvill.ru\\/appn\\/23CPDYM8jXUBsmTxX73AJHmrKhHAvtuFERqCKBnG.png"
+                }
+              }
+            },
+            "price_type" : {
+              "type" : "string",
+              "example" : 3
+            },
+            "price_name" : {
+              "type" : "string",
+              "example" : "Orange"
+            },
+            "priv_used" : {
+              "type" : "integer",
+              "format" : "int32",
+              "example" : 1
+            },
+            "resources" : {
+              "type" : "object",
+              "properties" : {
+                "color" : {
+                  "type" : "string",
+                  "example" : "#FF6E00"
+                },
+                "desc_text_color" : {
+                  "type" : "string",
+                  "example" : "#FF6E00"
+                },
+                "price_text_color" : {
+                  "type" : "string",
+                  "example" : "#FFFFFF"
+                },
+                "show_both" : {
+                  "type" : "boolean",
+                  "example" : true
+                },
+                "text" : {
+                  "type" : "string",
+                  "example" : "Действует по #ext2# при покупке от #ext1# шт. только онлайн-заказов"
+                }
+              }
+            },
+            "template" : {
+              "type" : "string",
+              "example" : "ЖЦ_Онлайн"
+            },
+            "type" : {
+              "type" : "integer",
+              "format" : "int32",
+              "example" : 278
+            }
+          }
+        }
+      }
+    }
+  }
+}
