@@ -386,7 +386,7 @@
           "Phone_number" : {
             "type" : "string",
             "description" : "10 цифр без лидирующих +7/8",
-            "example" : 9153713696
+            "example" : "9153713696"
           }
         }
       },
@@ -419,12 +419,12 @@
           "Phone_number" : {
             "type" : "string",
             "description" : "10 цифр без лидирующих +7/8",
-            "example" : 9153713696
+            "example" : "9153713696"
           },
           "sms" : {
             "type" : "string",
             "description" : "Код из СМС",
-            "example" : 148186
+            "example" : "148186"
           }
         }
       },
@@ -433,7 +433,7 @@
         "properties" : {
           "Phone_Number" : {
             "type" : "string",
-            "example" : 9153713696
+            "example" : "9153713696"
           },
           "number" : {
             "type" : "string",
@@ -496,7 +496,7 @@
           },
           "Service" : {
             "type" : "string",
-            "example" : 1
+            "example" : "1"
           },
           "isOnline" : {
             "type" : "integer",
@@ -515,7 +515,7 @@
               "properties" : {
                 "ShopNo" : {
                   "type" : "string",
-                  "example" : 999
+                  "example" : "999"
                 }
               }
             }
@@ -568,7 +568,7 @@
                 "BarCode" : {
                   "type" : "string",
                   "format" : "byte",
-                  "example" : 12321321
+                  "example" : "12321321"
                 },
                 "Id_Line" : {
                   "type" : "integer",
@@ -578,7 +578,7 @@
                 "MarkingDataMatrix" : {
                   "type" : "string",
                   "format" : "byte",
-                  "example" : 4231
+                  "example" : "4231"
                 }
               }
             }
@@ -604,20 +604,20 @@
               "properties" : {
                 "Id_Tov" : {
                   "type" : "string",
-                  "example" : 15259
+                  "example" : "15259"
                 },
                 "BarCode" : {
                   "type" : "string",
                   "format" : "byte",
-                  "example" : 12321321
+                  "example" : "12321321"
                 },
                 "GreenPrice" : {
                   "type" : "string",
-                  "example" : 0
+                  "example" : "0"
                 },
                 "Quantity" : {
                   "type" : "string",
-                  "example" : 10
+                  "example" : "10"
                 },
                 "Price" : {
                   "type" : "string",
@@ -637,20 +637,20 @@
                 },
                 "Price_type" : {
                   "type" : "string",
-                  "example" : 1
+                  "example" : "1"
                 },
                 "Id_Partner" : {
                   "type" : "string",
-                  "example" : 11
+                  "example" : "11"
                 },
                 "MarkingDataMatrix" : {
                   "type" : "string",
                   "format" : "byte",
-                  "example" : 4231
+                  "example" : "4231"
                 },
                 "Result_Code" : {
                   "type" : "string",
-                  "example" : 0
+                  "example" : "0"
                 },
                 "Dsc_Value" : {
                   "type" : "string",
@@ -670,7 +670,7 @@
                 },
                 "Id_Line" : {
                   "type" : "string",
-                  "example" : 0
+                  "example" : "0"
                 },
                 "priv_used" : {
                   "type" : "integer",
@@ -812,7 +812,7 @@
             },
             "price_type" : {
               "type" : "string",
-              "example" : 3
+              "example" : "3"
             },
             "price_name" : {
               "type" : "string",
