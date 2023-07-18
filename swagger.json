@@ -2,7 +2,7 @@
   "openapi" : "3.0.3",
   "info" : {
     "title" : "Единый кассовый бэкенд",
-    "description" : "Полезные ссылки: \n- [Описание ЕКБ на Букстеке](https://bookstack.int.vkusvill.ru/books/funkcionalnaya-arxitektura/page/edinyi-kassovyi-bekend-etap-1)\n- [ВкусВилл API](https://mobile.vkusvill.ru:40113/apidoc/)",
+    "description" : "Полезные ссылки:\n- [Описание ЕКБ на Букстеке](https://bookstack.int.vkusvill.ru/books/funkcionalnaya-arxitektura/page/edinyi-kassovyi-bekend-etap-1)\n- [ВкусВилл API](https://mobile.vkusvill.ru:40113/apidoc/)",
     "version" : "1.0"
   },
   "servers" : [ {
