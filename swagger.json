@@ -9,6 +9,9 @@
     "description" : "SwaggerHub API Auto Mocking",
     "url" : "https://virtserver.swaggerhub.com/chengaro/Unified-POS-Backend/1.0"
   }, {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/Unified-POS-Backend/1.0"
+  }, {
     "url" : "http://localhost:5000/api/v1"
   } ],
   "tags" : [ {
